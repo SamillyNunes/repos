@@ -1,9 +1,8 @@
+import Routes from "./routes";
 
 function App() {
   return (
-    <div >
-      <h1>Projetos</h1>
-    </div>
+    <Routes/>
   );
 }
 

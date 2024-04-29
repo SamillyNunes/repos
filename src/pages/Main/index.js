@@ -10,9 +10,11 @@ export default function Main(){
     const [newRepo, setNewRepo] = useState('');
     const [repositories, setRepositories] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [alertMsg, setAlertMsg] = useState(null);
 
     function handleInputChange(e){
         setNewRepo(e.target.value);
+        setAlertMsg(null);
     }
     
     // Usando o useCallback porque ha a manipulacao de estados dentro da funcao
@@ -21,7 +23,18 @@ export default function Main(){
 
         async function submit(){
             setLoading(true);
+            setAlertMsg(null);
+
             try {
+
+                if(newRepo===''){
+                    throw new Error('É necessário indicar um repositório');
+                }
+
+                const hasRepo = repositories.find(repo => repo.name === newRepo);
+                if(hasRepo){
+                    throw new Error('Repositório duplicado');
+                }
                 
                 const response = await api.get(`repos/${newRepo}`);
         
@@ -36,6 +49,7 @@ export default function Main(){
                 console.log(repositories);
                 
             } catch (error) {
+                setAlertMsg(error);
                 console.log(error);
             } finally{
                 
@@ -61,7 +75,7 @@ export default function Main(){
                     Meus repositórios
                 </h1>
 
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} error={alertMsg}>
                     <input 
                         type="text" 
                         placeholder="Adicionar Repositorios" 
@@ -69,7 +83,7 @@ export default function Main(){
                         onChange={handleInputChange}
                     />
 
-                    <SubmitButton loading={loading} >
+                    <SubmitButton loading={loading ? 1 : 0} >
                         {loading ? (
                             <FaSpinner color="#FFF" size={14} />
                         ) : (

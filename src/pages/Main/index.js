@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { FaBars, FaGithub, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
 
 import { Container, Form, SubmitButton, List, DeleteButton } from "./styles";
@@ -16,6 +16,20 @@ export default function Main(){
         setNewRepo(e.target.value);
         setAlertMsg(null);
     }
+
+    // Did Mount
+    useEffect(()=>{
+        const repoStorage = localStorage.getItem('repos');
+
+        if(repoStorage){
+            setRepositories(JSON.parse(repoStorage));
+        }
+    },[]);
+
+    // Update
+    useEffect(()=>{
+        localStorage.setItem('repos', JSON.stringify(repositories));
+    }, [repositories]);
     
     // Usando o useCallback porque ha a manipulacao de estados dentro da funcao
     const handleSubmit = useCallback((e)=>{

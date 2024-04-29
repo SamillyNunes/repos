@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
-import { Container } from "./styles";
+import { Container, Owner, Loading, BackButton } from "./styles";
 import api from "../../services/api";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function Repository({match}){
 
@@ -23,9 +24,6 @@ export default function Repository({match}){
                 }),
             ]);
 
-            console.log(repoData.data);
-            console.log(issuesData.data);
-
             setRepository(repoData.data);
             setIssues(issuesData.data);
 
@@ -36,9 +34,25 @@ export default function Repository({match}){
         loadRepo();
     },[match.params.repository]);
 
+    if(loading){
+        return (
+            <Loading>
+                <h1> Carregando... </h1>
+            </Loading>
+        );
+    }
+
     return (
         <Container>
+            <BackButton to="/">
+                <FaArrowLeft color="#000" size={30} />
+            </BackButton>
 
+            <Owner>
+                <img src={repository.owner.avatar_url} alt={repository.owner.login} />
+                <h1> {repository.name} </h1>
+                <p> {repository.description} </p>
+            </Owner>
         </Container>
     );
 }

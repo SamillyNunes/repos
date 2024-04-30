@@ -83,6 +83,19 @@ export const IssuesList = styled.ul`
                 font-size: 12px;
                 color: #000;
             }
+
+            & + span{
+                margin-left: 10px;
+            }
+
+            span{
+                background: #222;
+                color: #FFF;
+                border-radius: 4px;
+                font-style: 12px;
+                font-weight: 600;
+                padding: 4px 7px;
+            }
         }
 
         strong{
@@ -96,16 +109,6 @@ export const IssuesList = styled.ul`
                 &:hover{
                     color: #0071db;
                 }
-            }
-
-            span{
-                background: #222;
-                color: #FFF;
-                border-radius: 4px;
-                font-style: 12px;
-                font-weight: 600;
-                padding: 4px 7px;
-                margin-left: 10px;
             }
         }
     }

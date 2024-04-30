@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { Container, Owner, Loading, BackButton,IssuesList } from "./styles";
+import { Container, Owner, Loading, BackButton,IssuesList, PageActions } from "./styles";
 import api from "../../services/api";
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -9,14 +9,15 @@ export default function Repository({match}){
     const [repository, setRepository] = useState({});
     const [issues, setIssues] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
 
     useEffect(()=>{
         async function loadRepo(){
-            const nomeRepo = decodeURIComponent(match.params.repository);
+            const repoName = decodeURIComponent(match.params.repository);
 
             const [repoData, issuesData] = await Promise.all([
-                api.get(`/repos/${nomeRepo}`),
-                api.get(`/repos/${nomeRepo}/issues`, {
+                api.get(`/repos/${repoName}`),
+                api.get(`/repos/${repoName}/issues`, {
                     params: {
                         state: 'open',
                         per_page:5
@@ -33,6 +34,32 @@ export default function Repository({match}){
 
         loadRepo();
     },[match.params.repository]);
+
+    useEffect(()=>{
+        async function loadIssues(){
+            const repoName = decodeURIComponent(match.params.repository);
+
+            const response = await api.get(`/repos/${repoName}/issues`, {
+                params: {
+                    state: 'open',
+                    page, // como o nome e o valor sao iguais, pode passar assim
+                    per_page: 5,
+                }
+            });
+
+            setIssues(response.data);
+
+        }
+
+        loadIssues();
+    }, [match.params.repository, page]);
+
+    function handlePage(action){
+        if(page===1 && action ==='back') return;
+
+        const nextPage = action === 'back' ? page-1 : page+1;
+        setPage(nextPage);
+    }
 
     if(loading){
         return (
@@ -73,6 +100,17 @@ export default function Repository({match}){
                     </li>
                 ))}
             </IssuesList>
+
+            <PageActions>
+                <button 
+                    type="button" 
+                    onClick={()=>handlePage('back')} 
+                    disabled={page<2}
+                >
+                    Voltar
+                </button>
+                <button type="button" onClick={()=>handlePage('next')} >Próxima</button>
+            </PageActions>
 
         </Container>
     );

@@ -133,3 +133,23 @@ export const PageActions = styled.div`
         }
     }
 `;
+
+export const IssueStatusList = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+
+    button{
+        outline: 0;
+        border: 0;
+        background: #222;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+
+        & + button{
+            margin-left: 15px;
+        }
+    }
+`;

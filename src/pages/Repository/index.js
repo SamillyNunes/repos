@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { Container, Owner, Loading, BackButton,IssuesList, PageActions } from "./styles";
+import { Container, Owner, Loading, BackButton,IssuesList, PageActions, IssueStatusList } from "./styles";
 import api from "../../services/api";
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -10,6 +10,7 @@ export default function Repository({match}){
     const [issues, setIssues] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
+    const [issueStatus, setIssueStatus] = useState('open');
 
     useEffect(()=>{
         async function loadRepo(){
@@ -41,7 +42,7 @@ export default function Repository({match}){
 
             const response = await api.get(`/repos/${repoName}/issues`, {
                 params: {
-                    state: 'open',
+                    state: issueStatus,
                     page, // como o nome e o valor sao iguais, pode passar assim
                     per_page: 5,
                 }
@@ -52,7 +53,7 @@ export default function Repository({match}){
         }
 
         loadIssues();
-    }, [match.params.repository, page]);
+    }, [match.params.repository, page, issueStatus]);
 
     function handlePage(action){
         if(page===1 && action ==='back') return;
@@ -82,6 +83,13 @@ export default function Repository({match}){
             </Owner>
 
             <IssuesList>
+
+                <IssueStatusList>
+                    <button type="button" onClick={()=>setIssueStatus('open')} >Abertas</button>
+                    <button type="button" onClick={()=>setIssueStatus('closed')} >Fechadas</button>
+                    <button type="button" onClick={()=>setIssueStatus('all')} >Todas</button>
+                </IssueStatusList>
+                
                 {issues.map(issue=>(
                     <li key={String(issue.id)}>
                         <img src={issue.user.avatar_url} alt={issue.user.login} />

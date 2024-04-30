@@ -101,16 +101,18 @@ export default function Repository({match}){
                 ))}
             </IssuesList>
 
-            <PageActions>
-                <button 
-                    type="button" 
-                    onClick={()=>handlePage('back')} 
-                    disabled={page<2}
-                >
-                    Voltar
-                </button>
-                <button type="button" onClick={()=>handlePage('next')} >Próxima</button>
-            </PageActions>
+            {issues.length > 0 && (
+                <PageActions>
+                    <button 
+                        type="button" 
+                        onClick={()=>handlePage('back')} 
+                        disabled={page<2}
+                    >
+                        Voltar
+                    </button>
+                    <button type="button" onClick={()=>handlePage('next')} >Próxima</button>
+                </PageActions>
+            )}
 
         </Container>
     );

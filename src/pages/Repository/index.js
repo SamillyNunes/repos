@@ -10,7 +10,12 @@ export default function Repository({match}){
     const [issues, setIssues] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [issueStatus, setIssueStatus] = useState('open');
+    const [filters] = useState([
+        {state: 'all', label: 'Todas', active: true},
+        {state: 'open', label: 'Abertas', active: false},
+        {state: 'closed', label: 'Fechadas', active: false},
+    ]);
+    const [filterIndex, setFilterIndex] = useState(0);
 
     useEffect(()=>{
         async function loadRepo(){
@@ -20,7 +25,7 @@ export default function Repository({match}){
                 api.get(`/repos/${repoName}`),
                 api.get(`/repos/${repoName}/issues`, {
                     params: {
-                        state: 'open',
+                        state: filters.find(f=>f.active).state,
                         per_page:5
                     }
                 }),
@@ -34,7 +39,7 @@ export default function Repository({match}){
         }
 
         loadRepo();
-    },[match.params.repository]);
+    },[match.params.repository, filters]);
 
     useEffect(()=>{
         async function loadIssues(){
@@ -42,7 +47,7 @@ export default function Repository({match}){
 
             const response = await api.get(`/repos/${repoName}/issues`, {
                 params: {
-                    state: issueStatus,
+                    state: filters[filterIndex].state,
                     page, // como o nome e o valor sao iguais, pode passar assim
                     per_page: 5,
                 }
@@ -53,13 +58,17 @@ export default function Repository({match}){
         }
 
         loadIssues();
-    }, [match.params.repository, page, issueStatus]);
+    }, [match.params.repository, page, filters, filterIndex]);
 
     function handlePage(action){
         if(page===1 && action ==='back') return;
 
         const nextPage = action === 'back' ? page-1 : page+1;
         setPage(nextPage);
+    }
+
+    function handleFilter(index){
+        setFilterIndex(index);
     }
 
     if(loading){
@@ -84,12 +93,18 @@ export default function Repository({match}){
 
             <IssuesList>
 
-                <IssueStatusList>
-                    <button type="button" onClick={()=>setIssueStatus('open')} >Abertas</button>
-                    <button type="button" onClick={()=>setIssueStatus('closed')} >Fechadas</button>
-                    <button type="button" onClick={()=>setIssueStatus('all')} >Todas</button>
+                <IssueStatusList active={filterIndex} >
+                    {filters.map((filter, index)=> (
+                        <button
+                            type="button"
+                            key={filter.label}
+                            onClick={()=>handleFilter(index)}
+                        >
+                            {filter.label}
+                        </button>
+                    ))}
                 </IssueStatusList>
-                
+
                 {issues.map(issue=>(
                     <li key={String(issue.id)}>
                         <img src={issue.user.avatar_url} alt={issue.user.login} />

@@ -151,5 +151,11 @@ export const IssueStatusList = styled.div`
         & + button{
             margin-left: 15px;
         }
+
+        // nth child selects every element that is in the n place child of its parent
+        &:nth-child(${props => props.active + 1}){
+            background: #0071db;
+            color: #FFF;
+        }
     }
 `;
